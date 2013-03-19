@@ -1,0 +1,5 @@
+Lib/Ace is a collection of C utilities that are commong among my projects.
+
+#include <ace/list.h>
+#include <ace/crc.h>
+#include <ace/mutex.h>
