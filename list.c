@@ -2,7 +2,7 @@
 #include "list.h"
 
 node *
-createNode(void *data)
+nodeCreate(void *data)
 {
 	node *newNode = malloc(sizeof(node));
 	newNode->data = data;
@@ -14,17 +14,18 @@ createNode(void *data)
 list *
 listCreate(void)
 {
+	node *blank = nodeCreate(NULL);
 	list *l= malloc(sizeof(list));
-	l->head = NULL;
-	l->tail = NULL;
-	l->length = 0;
+	l->head = blank;
+	l->tail = blank;
+	l->length = 1;
 	return l;
 }
 
 void
 listAddHead(list *l, void *data)
 {
-	node *newNode = createNode(data);
+	node *newNode = nodeCreate(data);
 
 	if(l->length == 0) {
 		l->head = l->tail = newNode;
@@ -40,7 +41,7 @@ listAddHead(list *l, void *data)
 void
 listAddTail(list *l, void *data)
 {
-	node *newNode = createNode(data);
+	node *newNode = nodeCreate(data);
 
 	if(l->length == 0) {
 		l->head = l->tail = newNode;
@@ -50,5 +51,23 @@ listAddTail(list *l, void *data)
 		l->tail = newNode;
 	}
 	l->length++;
+	return;
+}
+
+void
+listDelete(list *l, node *n)
+{
+	if(n->prev) {
+		n->prev->next = n->next;
+	} else {
+		l->head = n->next;
+	}
+	if(n->next) {
+		n->next->prev = n->prev;
+	} else {
+		l->tail = n->prev;
+	}
+	free(n);
+	l->length--;
 	return;
 }
