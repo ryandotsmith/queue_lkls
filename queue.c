@@ -65,9 +65,8 @@ queueDequeue(list *l, void *buf)
 				__sync_bool_compare_and_swap(&l->tail,
 					tail, next);
 			} else {
-				//TODO(ryandotsmith): Not sure if
-				//stpcpy is the most effecient
-				//way to return data.
+				//TODO(ryandotsmith):
+				// Support multiple data types.
 				*(char *)buf = *(char *)next->data;
 
 				//We can only be sure that a dequeue is safe
