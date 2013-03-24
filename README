@@ -3,6 +3,5 @@ queue_lkls: A lock-free queue data structure.
 Queue_lkls is based on the research of Maged M. Michael & Michael L. Scott.
 
 TODO:
-
 * Provide a better memory allocator.
 * Provide a ruby interface for drop in replacement for Ruby's Queue class.
