@@ -65,16 +65,17 @@ queueDequeue(list *l, void *buf)
 				__sync_bool_compare_and_swap(&l->tail,
 					tail, next);
 			} else {
+				//TODO(ryandotsmith): Not sure if
+				//stpcpy is the most effecient
+				//way to return data.
+				*(char *)buf = *(char *)next->data;
+
 				//We can only be sure that a dequeue is safe
 				//if we can move the head to the next node.
 				int cas = 0;
 				cas = __sync_bool_compare_and_swap(&l->head,
 					head, next);
 				if(cas) {
-					//TODO(ryandotsmith): Not sure if
-					//stpcpy is the most effecient
-					//way to return data.
-					stpcpy(buf, next->data);
 					break;
 				}
 			}

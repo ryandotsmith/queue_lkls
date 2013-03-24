@@ -1,6 +1,3 @@
-Lib/Ace is a collection of C utilities that are commong among my projects.
+queue_lkls: A lock-free queue data structure.
 
-#include <ace/list.h>
-#include <ace/queue.h>
-#include <ace/crc.h>
-#include <ace/mutex.h>
+Queue_lkls is based on the research of Maged M. Michael & Michael L. Scott.
