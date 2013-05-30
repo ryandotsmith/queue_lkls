@@ -6,6 +6,8 @@
 #define LOCAL_WORKERS 100
 #define NUM_JOBS 10000
 
+pthread_mutex_t lock;
+
 void *
 produce(void *arg)
 {
@@ -13,7 +15,9 @@ produce(void *arg)
 	for(int i = 0; i < NUM_JOBS; i++) {
 		char buf[32];
 		sprintf(buf, "msg.%d", i);
-		queueEnqueue(l, strdup(buf));
+		pthread_mutex_lock(&lock);
+		listAddTail(l, strdup(buf));
+		pthread_mutex_unlock(&lock);
 	}
 	return 0;
 }
@@ -22,20 +26,18 @@ void *
 consume(void *arg)
 {
 	list *l = (list *)arg;
-	while(1) {
-		char buf[32];
-		int success;
-		success = queueDequeue(l, &buf);
-		if(!success) {
-			break;
-		}
-	}
+	char buf[32];
+	pthread_mutex_lock(&lock);
+	//listGetHead(l, &buf);
+	listDelete(l, l->head);
+	pthread_mutex_unlock(&lock);
 	return 0;
 }
 
 int
 main(int argc, char *argv[])
 {
+	pthread_mutex_init(&lock, NULL);
 	list *l = listCreate();
 	pthread_t producers[LOCAL_WORKERS];
 	pthread_t consumers[LOCAL_WORKERS];
@@ -47,5 +49,6 @@ main(int argc, char *argv[])
 		pthread_join(producers[i], NULL);
 		pthread_join(consumers[i], NULL);
 	}
+	pthread_mutex_destroy(&lock);
 	return 0;
 }

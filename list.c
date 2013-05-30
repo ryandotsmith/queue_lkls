@@ -55,6 +55,13 @@ listAddTail(list *l, void *data)
 }
 
 void
+listGetHead(list *l, void *buf)
+{
+	*(char *)buf = strdup((char *)l->head->data);
+	return;
+}
+
+void
 listDelete(list *l, node *n)
 {
 	if(n->prev) {
