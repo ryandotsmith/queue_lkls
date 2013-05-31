@@ -18,6 +18,7 @@ listCreate(void)
 	list *l= malloc(sizeof(list));
 	l->head = blank;
 	l->tail = blank;
+	l->head->next = l->tail;
 	l->length = 1;
 	return l;
 }
@@ -41,6 +42,11 @@ listAddHead(list *l, void *data)
 void
 listAddTail(list *l, void *data)
 {
+	if(pthread_mutex_lock(&l->lock) != 0) {
+		printf("Unable to lock mutex.\n");
+		return;
+	}
+
 	node *newNode = nodeCreate(data);
 
 	if(l->length == 0) {
@@ -51,30 +57,32 @@ listAddTail(list *l, void *data)
 		l->tail = newNode;
 	}
 	l->length++;
+	if(pthread_mutex_unlock(&l->lock) != 0) {
+		printf("Unable to unlock mutex.\n");
+	}
 	return;
 }
 
-void
-listGetHead(list *l, void *buf)
+int
+listDeleteFirst(list *l)
 {
-	*(char *)buf = strdup((char *)l->head->data);
-	return;
-}
+	if (l->head->next == l->tail) {
+		return 1;
+	}
 
-void
-listDelete(list *l, node *n)
-{
-	if(n->prev) {
-		n->prev->next = n->next;
-	} else {
-		l->head = n->next;
+	if(pthread_mutex_lock(&l->lock) != 0) {
+		printf("Unable to lock mutex.\n");
+		return 2;
 	}
-	if(n->next) {
-		n->next->prev = n->prev;
-	} else {
-		l->tail = n->prev;
-	}
-	free(n);
+
+	node *first = l->head->next;
+	l->head->next = first->next;
+	free(first);
 	l->length--;
-	return;
+
+	if(pthread_mutex_unlock(&l->lock) != 0) {
+		printf("Unable to unlock mutex.\n");
+		return 2;
+	}
+	return 0;
 }
